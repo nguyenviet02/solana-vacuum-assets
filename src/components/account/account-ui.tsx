@@ -5,7 +5,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
 import { useCluster } from '../cluster/cluster-data-access'
 import { ExplorerLink } from '../cluster/cluster-ui'
-import { AppModal, ellipsify } from '../ui/ui-layout'
+import { AppModal } from '../ui/ui-layout'
 import {
   useGetBalance,
   useGetSignatures,
@@ -13,6 +13,7 @@ import {
   useRequestAirdrop,
   useTransferSol,
 } from './account-data-access'
+import { ellipsify } from '@/utils'
 
 export function AccountBalance({ address }: { address: PublicKey }) {
   const query = useGetBalance({ address })

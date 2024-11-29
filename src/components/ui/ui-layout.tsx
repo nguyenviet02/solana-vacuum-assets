@@ -1,9 +1,7 @@
 import { ReactNode, Suspense, useEffect, useRef } from 'react'
-import toast, { Toaster } from 'react-hot-toast'
+import { Toaster } from 'react-hot-toast'
 import { Link, useLocation } from 'react-router-dom'
 
-import { AccountChecker } from '../account/account-ui'
-import { ClusterChecker, ClusterUiSelect, ExplorerLink } from '../cluster/cluster-ui'
 import { WalletButton } from '../solana/solana-provider'
 
 export function UiLayout({ children, links }: { children: ReactNode; links: { label: string; path: string }[] }) {
@@ -28,12 +26,8 @@ export function UiLayout({ children, links }: { children: ReactNode; links: { la
         </div>
         <div className="flex-none space-x-2">
           <WalletButton />
-          <ClusterUiSelect />
         </div>
       </div>
-      <ClusterChecker>
-        <AccountChecker />
-      </ClusterChecker>
       <div className="flex-grow mx-4 lg:mx-auto">
         <Suspense
           fallback={
@@ -135,22 +129,4 @@ export function AppHero({
       </div>
     </div>
   )
-}
-
-export function ellipsify(str = '', len = 4) {
-  if (str.length > 30) {
-    return str.substring(0, len) + '..' + str.substring(str.length - len, str.length)
-  }
-  return str
-}
-
-export function useTransactionToast() {
-  return (signature: string) => {
-    toast.success(
-      <div className={'text-center'}>
-        <div className="text-lg">Transaction sent</div>
-        <ExplorerLink path={`tx/${signature}`} label={'View Transaction'} className="btn btn-xs btn-primary" />
-      </div>,
-    )
-  }
 }

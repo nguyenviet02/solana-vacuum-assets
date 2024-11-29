@@ -17,7 +17,7 @@ export function UiLayout({ children }: { children: ReactNode; links: { label: st
           <WalletButton />
         </div>
       </div>
-      <div className="flex-grow mx-4 lg:mx-auto">
+      <div className="flex-grow py-8">
         <Suspense
           fallback={
             <div className="text-center my-32">

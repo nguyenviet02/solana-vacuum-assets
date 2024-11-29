@@ -1,10 +1,10 @@
 import { WalletButton } from '../solana/solana-provider'
-import { AppHero } from '../ui/ui-layout'
+import { AppHero } from '../ui/app-hero'
 
 export default function DashboardFeature() {
   return (
-    <div>
-      <AppHero title="gm" subtitle="Say hi to your new Solana dApp." />
+    <div className="container mx-auto flex flex-col items-center">
+      <AppHero />
       <WalletButton />
     </div>
   )

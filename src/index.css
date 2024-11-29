@@ -18,3 +18,14 @@ body,
 .wallet-adapter-button {
   font-family: inherit !important;
 }
+
+.main-bg {
+  background-image: url('/background.svg');
+  background-size: 100%;
+  background-repeat: no-repeat;
+}
+
+.container {
+  width: 100%;
+  max-width: 1128px;
+}

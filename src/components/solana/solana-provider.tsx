@@ -1,4 +1,6 @@
 import { WalletError } from '@solana/wallet-adapter-base'
+import { SolflareWalletAdapter } from '@solana/wallet-adapter-solflare'
+import { LedgerWalletAdapter } from '@solana/wallet-adapter-ledger'
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react'
 import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 import { ReactNode, useCallback, useMemo } from 'react'
@@ -15,9 +17,11 @@ export function SolanaProvider({ children }: { children: ReactNode }) {
     console.error(error)
   }, [])
 
+  const wallets = useMemo(() => [new SolflareWalletAdapter(), new LedgerWalletAdapter()], [])
+
   return (
     <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={[]} onError={onError} autoConnect={true}>
+      <WalletProvider wallets={wallets} onError={onError} autoConnect={true}>
         <WalletModalProvider>{children}</WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>

@@ -5,7 +5,8 @@ import ScoopTool from './scoop-tool'
 import { useEffect, useMemo, useState } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import getTokenMetadataByMint from '@/utils/getTokenMetadata'
-import { TTokenData } from '@/types'
+import { SORT_BY, SORT_TYPE, TFilterData, TTokenData } from '@/types'
+import ScoopFilter from './scoop-filter'
 
 const Scoop = () => {
   const connection = useConnection()
@@ -15,8 +16,17 @@ const Scoop = () => {
   }, [wallet])
 
   const [isLoadingTokenData, setIsLoadingTokenData] = useState(true)
+  const [defaultListTokenData, setDefaultListTokenData] = useState<TTokenData[]>([])
   const [listTokenData, setListTokenData] = useState<TTokenData[]>([])
   const [isShowTool, setIsShowTool] = useState(false)
+
+  const [filterData, setFilterData] = useState<TFilterData>({
+    symbol: '',
+    isSort: false,
+    sortBy: SORT_BY.SYMBOL,
+    sortType: SORT_TYPE.ASC,
+  })
+  console.log('☠️ ~ Scoop ~ filterData:', filterData)
 
   async function getTokenAccounts(wallet: string, solanaConnection: Connection) {
     setIsLoadingTokenData(true)
@@ -49,10 +59,12 @@ const Scoop = () => {
       listToken.push(tokenData)
     }
     setListTokenData(listToken)
+    setDefaultListTokenData(listToken)
     setIsLoadingTokenData(false)
   }
 
   useEffect(() => {
+    if (!connection || !walletToQuery) return
     getTokenAccounts(walletToQuery, connection?.connection)
   }, [connection, walletToQuery])
 
@@ -64,11 +76,40 @@ const Scoop = () => {
     setIsShowTool(true)
   }, [walletToQuery])
 
+  useEffect(() => {
+    if (!filterData.isSort) {
+      return
+    }
+    const sortedData = [...listTokenData].sort((a, b) => {
+      if (filterData.sortBy === SORT_BY.SYMBOL) {
+        return filterData.sortType === SORT_TYPE.ASC
+          ? a.tokenSymbol?.localeCompare(b.tokenSymbol!)
+          : b.tokenSymbol?.localeCompare(a.tokenSymbol!)
+      }
+      if (filterData.sortBy === SORT_BY.BALANCE) {
+        return filterData.sortType === SORT_TYPE.ASC ? a.tokenBalance - b.tokenBalance : b.tokenBalance - a.tokenBalance
+      }
+			return 0
+    })
+    setListTokenData(sortedData)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterData.isSort, filterData.sortBy, filterData.sortType])
+
+  useEffect(() => {
+    if (filterData.symbol === '') {
+      setListTokenData(defaultListTokenData)
+      return
+    }
+    const filteredData = [...listTokenData].filter((token) => token.tokenSymbol?.includes(filterData.symbol))
+    setListTokenData(filteredData)
+  }, [defaultListTokenData, filterData.symbol, listTokenData])
+
   return (
     <>
       {isShowTool ? (
         <div className="w-full flex mt-8 gap-4">
           <div className="w-3/4">
+            <ScoopFilter filterData={filterData} setFilterData={setFilterData} />
             <ScoopTable data={listTokenData} isLoading={isLoadingTokenData} />
           </div>
           <div className="w-1/4">

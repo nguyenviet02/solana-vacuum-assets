@@ -1,8 +1,7 @@
-type Props = {}
 
-const ScoopTool = (props: Props) => {
+const ScoopTool = () => {
   return (
-    <div className="flex flex-col gap-3 w-full border border-black p-4">
+    <div className="flex flex-col gap-3 w-full border border-black p-4 rounded">
       <div className="flex justify-between items-center p-4 border border-gray-300 rounded-lg">
         <div className="flex flex-col">
           <p className="text-black">0</p>

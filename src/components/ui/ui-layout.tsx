@@ -6,7 +6,7 @@ import { WalletButton } from '../solana/solana-provider'
 
 export function UiLayout({ children }: { children: ReactNode; links: { label: string; path: string }[] }) {
   return (
-    <div className="h-full flex flex-col main-bg bg-white">
+    <div className="h-full flex flex-col main-bg bg-white min-h-screen">
       <div className="container navbar text-neutral-content flex-col md:flex-row space-y-2 md:space-y-0 mx-auto">
         <div className="flex-1">
           <Link className="normal-case text-xl" to="/">
@@ -17,7 +17,7 @@ export function UiLayout({ children }: { children: ReactNode; links: { label: st
           <WalletButton />
         </div>
       </div>
-      <div className="flex-grow py-8">
+      <div className="flex-grow flex-1 py-8">
         <Suspense
           fallback={
             <div className="text-center my-32">

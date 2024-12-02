@@ -10,7 +10,7 @@ import('@solana/wallet-adapter-react-ui/styles.css')
 export const WalletButton = WalletMultiButton
 
 export function SolanaProvider({ children }: { children: ReactNode }) {
-  const endpoint = 'https://attentive-wispy-lambo.solana-mainnet.quiknode.pro/7ebe538ec592abd29465295d78136b34bb60f386'
+  const endpoint = import.meta.env.VITE_ENDPOINT_MAINNET
   const onError = useCallback((error: WalletError) => {
     console.error(error)
   }, [])

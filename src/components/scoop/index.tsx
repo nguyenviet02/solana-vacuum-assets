@@ -50,7 +50,7 @@ const Scoop = () => {
       const parsedAccountInfo: any = account.account.data
       const mintAddress: string = parsedAccountInfo['parsed']['info']['mint']
       const tokenBalance: number = parsedAccountInfo['parsed']['info']['tokenAmount']['uiAmount']
-      if (tokenBalance === 0) return
+      if (tokenBalance === 0) continue
       const tokenMetadata = await getTokenMetadataByMint(solanaConnection, mintAddress)
       const tokenData = {
         mintAddress,

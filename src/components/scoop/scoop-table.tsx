@@ -6,13 +6,14 @@ import { useLayoutEffect, useRef, useState } from 'react'
 type TProps = {
   data: TTokenData[]
   isLoading: boolean
+  selectedToken: TTokenData[]
+  setSelectedToken: (value: TTokenData[]) => void
 }
 
-export default function ScoopTable({ data, isLoading }: TProps) {
+export default function ScoopTable({ data, isLoading, selectedToken, setSelectedToken }: TProps) {
   const checkbox = useRef<HTMLInputElement>(null)
   const [checked, setChecked] = useState(false)
   const [indeterminate, setIndeterminate] = useState(false)
-  const [selectedToken, setSelectedToken] = useState<TTokenData[]>([])
 
   useLayoutEffect(() => {
     const isIndeterminate = selectedToken.length > 0 && selectedToken.length < data?.length
@@ -141,7 +142,7 @@ export default function ScoopTable({ data, isLoading }: TProps) {
                           {token?.tokenSymbol}
                         </td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{token?.tokenBalance}</td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{token?.tokenSymbol}</td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{token?.mintAddress}</td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{token?.tokenSymbol}</td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{token?.tokenSymbol}</td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{token?.tokenSymbol}</td>

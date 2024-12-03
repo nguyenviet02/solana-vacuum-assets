@@ -26,7 +26,8 @@ const Scoop = () => {
     sortBy: SORT_BY.SYMBOL,
     sortType: SORT_TYPE.ASC,
   })
-  console.log('☠️ ~ Scoop ~ filterData:', filterData)
+
+  const [selectedToken, setSelectedToken] = useState<TTokenData[]>([])
 
   async function getTokenAccounts(wallet: string, solanaConnection: Connection) {
     setIsLoadingTokenData(true)
@@ -83,13 +84,13 @@ const Scoop = () => {
     const sortedData = [...listTokenData].sort((a, b) => {
       if (filterData.sortBy === SORT_BY.SYMBOL) {
         return filterData.sortType === SORT_TYPE.ASC
-          ? a.tokenSymbol?.localeCompare(b.tokenSymbol!)
-          : b.tokenSymbol?.localeCompare(a.tokenSymbol!)
+          ? (a.tokenSymbol?.localeCompare(b.tokenSymbol!) ?? 0)
+          : (b.tokenSymbol?.localeCompare(a.tokenSymbol!) ?? 0)
       }
       if (filterData.sortBy === SORT_BY.BALANCE) {
         return filterData.sortType === SORT_TYPE.ASC ? a.tokenBalance - b.tokenBalance : b.tokenBalance - a.tokenBalance
       }
-			return 0
+      return 0
     })
     setListTokenData(sortedData)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -110,10 +111,15 @@ const Scoop = () => {
         <div className="w-full flex mt-8 gap-4">
           <div className="w-3/4">
             <ScoopFilter filterData={filterData} setFilterData={setFilterData} />
-            <ScoopTable data={listTokenData} isLoading={isLoadingTokenData} />
+            <ScoopTable
+              data={listTokenData}
+              isLoading={isLoadingTokenData}
+              selectedToken={selectedToken}
+              setSelectedToken={setSelectedToken}
+            />
           </div>
           <div className="w-1/4">
-            <ScoopTool />
+            <ScoopTool selectedToken={selectedToken} />
           </div>
         </div>
       ) : (

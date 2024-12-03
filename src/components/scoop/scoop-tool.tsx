@@ -1,12 +1,26 @@
 import { TTokenData } from '@/types'
+import createTransaction from '@/utils/createTransaction'
+import { QuoteGetRequest } from '@jup-ag/api'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 type Props = {
   selectedToken: TTokenData[]
 }
 
 const ScoopTool = ({ selectedToken }: Props) => {
-  const swapToken = () => {
-    console.log('☠️ ~ ScoopTool ~ selectedToken:', selectedToken)
+  const wallet = useWallet()
+  const swapToken = async () => {
+    const quoteRequests: QuoteGetRequest[] = [...selectedToken]?.map((token) => {
+      return {
+        inputMint: token.mintAddress,
+        outputMint: import.meta.env.VITE_CAT_ADDRESS,
+        amount: token?.tokenBalance * Math.pow(10, token?.decimals),
+      }
+    })
+
+    for (const quoteRequest of quoteRequests) {
+      await createTransaction(quoteRequest, wallet)
+    }
   }
 
   return (

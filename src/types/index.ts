@@ -4,6 +4,7 @@ export type TTokenData = {
   mintAddress: string
   tokenBalance: number
   tokenSymbol: string | undefined
+	decimals: number
 }
 
 export type TTokenMetadata = Sft | SftWithToken | Nft | NftWithToken | null

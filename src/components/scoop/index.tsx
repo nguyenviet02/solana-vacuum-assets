@@ -56,6 +56,7 @@ const Scoop = () => {
         mintAddress,
         tokenBalance,
         tokenSymbol: tokenMetadata?.symbol,
+        decimals: tokenMetadata?.mint?.decimals || 6,
       }
       listToken.push(tokenData)
     }

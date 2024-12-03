@@ -142,7 +142,7 @@ export default function ScoopTable({ data, isLoading, selectedToken, setSelected
                           {token?.tokenSymbol}
                         </td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{token?.tokenBalance}</td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{token?.mintAddress}</td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{token?.tokenSymbol}</td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{token?.tokenSymbol}</td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{token?.tokenSymbol}</td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{token?.tokenSymbol}</td>

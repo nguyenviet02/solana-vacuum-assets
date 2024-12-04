@@ -24,7 +24,6 @@ const swapTokens = async (
   onSuccess: () => void,
   onFail: () => void,
 ) => {
-  console.log('☠️ ~ dataTransactions:', dataTransactions)
   if (!wallet?.signTransaction) {
     return
   }
@@ -74,8 +73,7 @@ const swapTokens = async (
     await Promise.all(
       signedTransactions.map(async (transaction) => {
         try {
-          const result = await sendAndConfirmRawTransaction(connection, Buffer.from(transaction.serialize()), {})
-          console.log('☠️ ~ signedTransactions.map ~ result:', result)
+          await sendAndConfirmRawTransaction(connection, Buffer.from(transaction.serialize()), {})
           console.log('Transaction Success!')
           onSuccess()
         } catch (err) {

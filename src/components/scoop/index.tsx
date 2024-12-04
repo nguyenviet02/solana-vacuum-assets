@@ -65,7 +65,6 @@ const Scoop = () => {
     ]
     const accounts = await solanaConnection.getParsedProgramAccounts(TOKEN_PROGRAM_ID, { filters: filters })
     for (const account of accounts) {
-      console.log('☠️ ~ getTokenAccounts ~ account:', account?.pubkey?.toString())
       //Parse the account data
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const parsedAccountInfo: any = account.account.data

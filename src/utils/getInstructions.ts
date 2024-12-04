@@ -10,14 +10,11 @@ const CONFIG = {
 async function getInstructions(quoteRequest: QuoteGetRequest, wallet: WalletContextState) {
   const jupiterApi = createJupiterApiClient(CONFIG)
   try {
-    // 1. Retrieve a Swap Quote
     const quote: QuoteResponse | null = await jupiterApi.quoteGet(quoteRequest)
     if (!quote) {
       throw new Error('No quote found')
     }
-    console.log('☠️ ~ getInstructions ~ quote:', quote)
 
-    // 2. Get Serialized Swap Transaction
     const swapResult = await jupiterApi.swapInstructionsPost({
       swapRequest: {
         quoteResponse: quote,
@@ -27,7 +24,6 @@ async function getInstructions(quoteRequest: QuoteGetRequest, wallet: WalletCont
     if (!swapResult) {
       throw new Error('No swap result found')
     }
-    console.log('☠️ ~ getInstructions ~ swapResult:', swapResult)
     return {
       addressLookupTableAddresses: swapResult.addressLookupTableAddresses,
       computeBudgetInstructions: swapResult.computeBudgetInstructions,

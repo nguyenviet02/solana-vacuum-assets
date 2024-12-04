@@ -15,6 +15,7 @@ async function getInstructions(quoteRequest: QuoteGetRequest, wallet: WalletCont
     if (!quote) {
       throw new Error('No quote found')
     }
+    console.log('☠️ ~ getInstructions ~ quote:', quote)
 
     // 2. Get Serialized Swap Transaction
     const swapResult = await jupiterApi.swapInstructionsPost({
@@ -29,7 +30,7 @@ async function getInstructions(quoteRequest: QuoteGetRequest, wallet: WalletCont
     console.log('☠️ ~ getInstructions ~ swapResult:', swapResult)
     return {
       addressLookupTableAddresses: swapResult.addressLookupTableAddresses,
-			computeBudgetInstructions: swapResult.computeBudgetInstructions,
+      computeBudgetInstructions: swapResult.computeBudgetInstructions,
       instruction: deserializeInstruction(swapResult.swapInstruction),
     }
   } catch (error) {

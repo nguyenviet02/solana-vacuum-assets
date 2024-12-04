@@ -1,6 +1,7 @@
 'use client'
 
 import { TTokenData } from '@/types'
+import { QuoteResponse } from '@jup-ag/api'
 import { useLayoutEffect, useRef, useState } from 'react'
 
 type TProps = {
@@ -8,9 +9,17 @@ type TProps = {
   isLoading: boolean
   selectedToken: TTokenData[]
   setSelectedToken: (value: TTokenData[]) => void
+  listDataQuote: QuoteResponse[]
 }
 
-export default function ScoopTable({ data, isLoading, selectedToken, setSelectedToken }: TProps) {
+export default function ScoopTable({
+  data,
+  isLoading,
+  selectedToken,
+  setSelectedToken,
+  listDataQuote,
+}: TProps) {
+
   const checkbox = useRef<HTMLInputElement>(null)
   const [checked, setChecked] = useState(false)
   const [indeterminate, setIndeterminate] = useState(false)
@@ -28,6 +37,12 @@ export default function ScoopTable({ data, isLoading, selectedToken, setSelected
     setSelectedToken(checked || indeterminate ? [] : data)
     setChecked(!checked && !indeterminate)
     setIndeterminate(false)
+  }
+
+  const getOutAmount = (mintAddress: string) => {
+    const outAmount = listDataQuote.find((quote) => quote.inputMint === mintAddress)?.outAmount
+    if (!outAmount) return 0
+    return Number(outAmount) / Math.pow(10, 6)
   }
 
   return (
@@ -142,7 +157,9 @@ export default function ScoopTable({ data, isLoading, selectedToken, setSelected
                           {token?.tokenSymbol}
                         </td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{token?.tokenBalance}</td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{token?.tokenSymbol}</td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                          {getOutAmount(token?.mintAddress)}
+                        </td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{token?.tokenSymbol}</td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{token?.tokenSymbol}</td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{token?.tokenSymbol}</td>

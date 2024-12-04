@@ -7,8 +7,16 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import getTokenMetadataByMint from '@/utils/getTokenMetadata'
 import { SORT_BY, SORT_TYPE, TFilterData, TTokenData } from '@/types'
 import ScoopFilter from './scoop-filter'
+import { createJupiterApiClient, QuoteGetRequest, QuoteResponse } from '@jup-ag/api'
+
+const ENDPOINT = `https://public.jupiterapi.com`
+const CONFIG = {
+  basePath: ENDPOINT,
+}
 
 const Scoop = () => {
+  const jupiterApi = createJupiterApiClient(CONFIG)
+
   const connection = useConnection()
   const wallet = useWallet()
   const walletToQuery = useMemo(() => {
@@ -27,7 +35,19 @@ const Scoop = () => {
     sortType: SORT_TYPE.ASC,
   })
 
+  const quoteRequests: QuoteGetRequest[] = useMemo(() => {
+    return listTokenData?.map((token) => {
+      return {
+        inputMint: token.mintAddress,
+        outputMint: import.meta.env.VITE_CAT_ADDRESS,
+        amount: Math.round(token?.tokenBalance * Math.pow(10, token?.decimals)),
+        slippageBps: 1500,
+      }
+    })
+  }, [listTokenData])
+
   const [selectedToken, setSelectedToken] = useState<TTokenData[]>([])
+  const [listDataQuote, setListDataQuote] = useState<QuoteResponse[]>([])
 
   async function getTokenAccounts(wallet: string, solanaConnection: Connection) {
     setIsLoadingTokenData(true)
@@ -50,7 +70,7 @@ const Scoop = () => {
       const parsedAccountInfo: any = account.account.data
       const mintAddress: string = parsedAccountInfo['parsed']['info']['mint']
       const tokenBalance: number = parsedAccountInfo['parsed']['info']['tokenAmount']['uiAmount']
-      if (tokenBalance === 0) continue
+      if (tokenBalance === 0 || mintAddress === import.meta.env.VITE_CAT_ADDRESS) continue
       const tokenMetadata = await getTokenMetadataByMint(solanaConnection, mintAddress)
       const tokenData = {
         mintAddress,
@@ -110,6 +130,22 @@ const Scoop = () => {
     setListTokenData(filteredData)
   }, [defaultListTokenData, filterData.symbol, listTokenData])
 
+  useEffect(() => {
+    const getQuoteRequest = async () => {
+      const data = []
+      for (const quoteRequest of quoteRequests) {
+        const quote: QuoteResponse | null = await jupiterApi.quoteGet(quoteRequest)
+        if (!quote) {
+          throw new Error('No quote found')
+        }
+        data.push(quote)
+      }
+      setListDataQuote(data)
+    }
+    getQuoteRequest()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quoteRequests])
+
   return (
     <>
       {isShowTool ? (
@@ -121,10 +157,15 @@ const Scoop = () => {
               isLoading={isLoadingTokenData}
               selectedToken={selectedToken}
               setSelectedToken={setSelectedToken}
+              listDataQuote={listDataQuote}
             />
           </div>
           <div className="w-1/4">
-            <ScoopTool selectedToken={selectedToken} refetchTokenAccounts={refetchTokenAccounts} />
+            <ScoopTool
+              selectedToken={selectedToken}
+              refetchTokenAccounts={refetchTokenAccounts}
+              listDataQuote={listDataQuote}
+            />
           </div>
         </div>
       ) : (

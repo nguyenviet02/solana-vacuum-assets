@@ -19,6 +19,7 @@ const swapTokens = async (
     addressLookupTableAddresses: PublicKey[]
   }[],
 	onSuccess: () => void,
+	onFail: () => void,
 ) => {
   if (!wallet?.signTransaction) {
     return
@@ -68,6 +69,7 @@ const swapTokens = async (
         } catch (err) {
           console.log('Transaction failed!')
           console.log(err)
+					onFail()
         }
       }),
     )

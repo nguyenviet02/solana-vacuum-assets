@@ -1,17 +1,45 @@
 import { TTokenData } from '@/types'
 import getInstructions from '@/utils/getInstructions'
 import swapTokens from '@/utils/swapTokens'
-import { QuoteGetRequest } from '@jup-ag/api'
+import { QuoteGetRequest, QuoteResponse } from '@jup-ag/api'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { PublicKey } from '@solana/web3.js'
+import { useMemo, useState } from 'react'
 
 type Props = {
   selectedToken: TTokenData[]
-	refetchTokenAccounts: () => void
+  refetchTokenAccounts: () => void
+  listDataQuote: QuoteResponse[]
 }
 
-const ScoopTool = ({ selectedToken, refetchTokenAccounts }: Props) => {
+const ScoopTool = ({ selectedToken, refetchTokenAccounts, listDataQuote }: Props) => {
   const wallet = useWallet()
+  const [isSwapping, setIsSwapping] = useState(false)
+  console.log('☠️ ~ ScoopTool ~ isSwapping:', isSwapping)
+
+  const possibleSwap = useMemo(() => {
+    return listDataQuote.reduce((acc, quote) => {
+      return acc + Number(quote.outAmount) / Math.pow(10, 6)
+    }, 0)
+  }, [listDataQuote])
+
+  const totalSwap = useMemo(() => {
+    return selectedToken.reduce((acc, token) => {
+      const outAmount = listDataQuote.find((quote) => quote.inputMint === token.mintAddress)?.outAmount
+      if (!outAmount) return acc
+      return acc + Number(outAmount) / Math.pow(10, 6)
+    }, 0)
+  }, [selectedToken, listDataQuote])
+
+  const onSwapSuccess = () => {
+    refetchTokenAccounts()
+    setIsSwapping(false)
+  }
+
+  const onSwapFail = () => {
+    setIsSwapping(false)
+  }
+
   const swapToken = async () => {
     const quoteRequests: QuoteGetRequest[] = [...selectedToken]?.map((token) => {
       return {
@@ -33,21 +61,23 @@ const ScoopTool = ({ selectedToken, refetchTokenAccounts }: Props) => {
       dataTransactions.push(dataTransaction)
     }
 
-    await swapTokens(wallet, dataTransactions, refetchTokenAccounts)
+    await swapTokens(wallet, dataTransactions, onSwapSuccess, onSwapFail)
+
+    setIsSwapping(false)
   }
 
   return (
     <div className="flex flex-col gap-3 w-full border border-black p-4 rounded">
       <div className="flex justify-between items-center p-4 border border-gray-300 rounded-lg">
         <div className="flex flex-col">
-          <p className="text-black">0</p>
+          <p className="text-black">{possibleSwap}</p>
           <p className="text-[12px]">Possible Scoop</p>
         </div>
         <button>DEL</button>
       </div>
       <div className="flex justify-between items-center p-4 border border-gray-300 rounded-lg">
         <div className="flex flex-col">
-          <p className="text-black">0</p>
+          <p className="text-black">{totalSwap}</p>
           <p className="text-[12px]">Total Scoop</p>
         </div>
         <button>DEL</button>

@@ -1,7 +1,9 @@
 import { TTokenData } from '@/types'
-import createTransaction from '@/utils/createTransaction'
+import getInstructions from '@/utils/getInstructions'
+import swapTokens from '@/utils/swapTokens'
 import { QuoteGetRequest } from '@jup-ag/api'
 import { useWallet } from '@solana/wallet-adapter-react'
+import { TransactionInstruction } from '@solana/web3.js'
 
 type Props = {
   selectedToken: TTokenData[]
@@ -18,9 +20,14 @@ const ScoopTool = ({ selectedToken }: Props) => {
       }
     })
 
+    const listInstruction: TransactionInstruction[] = []
+
     for (const quoteRequest of quoteRequests) {
-      await createTransaction(quoteRequest, wallet)
+      const instruction = await getInstructions(quoteRequest, wallet)
+      listInstruction.push(instruction!)
     }
+
+		await swapTokens(wallet, listInstruction)
   }
 
   return (

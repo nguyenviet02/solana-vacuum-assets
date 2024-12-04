@@ -65,6 +65,10 @@ const Scoop = () => {
     setIsLoadingTokenData(false)
   }
 
+  const refetchTokenAccounts = () => {
+    getTokenAccounts(walletToQuery, connection?.connection)
+  }
+
   useEffect(() => {
     if (!connection || !walletToQuery) return
     getTokenAccounts(walletToQuery, connection?.connection)
@@ -120,7 +124,7 @@ const Scoop = () => {
             />
           </div>
           <div className="w-1/4">
-            <ScoopTool selectedToken={selectedToken} />
+            <ScoopTool selectedToken={selectedToken} refetchTokenAccounts={refetchTokenAccounts} />
           </div>
         </div>
       ) : (

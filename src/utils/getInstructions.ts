@@ -1,6 +1,6 @@
 import { QuoteGetRequest, QuoteResponse, createJupiterApiClient, ResponseError } from '@jup-ag/api'
 import { WalletContextState } from '@solana/wallet-adapter-react'
-import { PublicKey, TransactionInstruction } from '@solana/web3.js'
+import deserializeInstruction from './deserializeInstruction'
 
 const ENDPOINT = `https://public.jupiterapi.com`
 const CONFIG = {
@@ -27,14 +27,11 @@ async function getInstructions(quoteRequest: QuoteGetRequest, wallet: WalletCont
       throw new Error('No swap result found')
     }
     console.log('☠️ ~ getInstructions ~ swapResult:', swapResult)
-    return new TransactionInstruction({
-      keys: swapResult.swapInstruction.accounts.map((account) => ({
-        ...account,
-        pubkey: new PublicKey(account.pubkey),
-      })),
-      programId: new PublicKey(swapResult?.swapInstruction?.programId),
-      data: Buffer.from(swapResult?.swapInstruction?.data, 'base64'),
-    })
+    return {
+      addressLookupTableAddresses: swapResult.addressLookupTableAddresses,
+			computeBudgetInstructions: swapResult.computeBudgetInstructions,
+      instruction: deserializeInstruction(swapResult.swapInstruction),
+    }
   } catch (error) {
     if (error instanceof ResponseError) {
       console.log(await error.response.json())

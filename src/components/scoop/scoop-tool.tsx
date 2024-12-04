@@ -3,31 +3,37 @@ import getInstructions from '@/utils/getInstructions'
 import swapTokens from '@/utils/swapTokens'
 import { QuoteGetRequest } from '@jup-ag/api'
 import { useWallet } from '@solana/wallet-adapter-react'
-import { TransactionInstruction } from '@solana/web3.js'
+import { PublicKey } from '@solana/web3.js'
 
 type Props = {
   selectedToken: TTokenData[]
+	refetchTokenAccounts: () => void
 }
 
-const ScoopTool = ({ selectedToken }: Props) => {
+const ScoopTool = ({ selectedToken, refetchTokenAccounts }: Props) => {
   const wallet = useWallet()
   const swapToken = async () => {
     const quoteRequests: QuoteGetRequest[] = [...selectedToken]?.map((token) => {
       return {
         inputMint: token.mintAddress,
         outputMint: import.meta.env.VITE_CAT_ADDRESS,
-        amount: token?.tokenBalance * Math.pow(10, token?.decimals),
+        amount: Math.round(token?.tokenBalance * Math.pow(10, token?.decimals)),
       }
     })
 
-    const listInstruction: TransactionInstruction[] = []
+    const dataTransactions = []
 
     for (const quoteRequest of quoteRequests) {
-      const instruction = await getInstructions(quoteRequest, wallet)
-      listInstruction.push(instruction!)
+      const data = await getInstructions(quoteRequest, wallet)
+      const dataTransaction = {
+        instruction: data!.instruction,
+        computeBudgetInstructions: data!.computeBudgetInstructions,
+        addressLookupTableAddresses: data!.addressLookupTableAddresses.map((address) => new PublicKey(address)),
+      }
+      dataTransactions.push(dataTransaction)
     }
 
-		await swapTokens(wallet, listInstruction)
+    await swapTokens(wallet, dataTransactions, refetchTokenAccounts)
   }
 
   return (

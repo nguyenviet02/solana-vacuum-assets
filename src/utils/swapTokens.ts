@@ -10,6 +10,7 @@ import {
   VersionedTransaction,
 } from '@solana/web3.js'
 import deserializeInstruction from './deserializeInstruction'
+import { createCloseAccountInstruction, TOKEN_PROGRAM_ID } from '@solana/spl-token'
 
 const swapTokens = async (
   wallet: WalletContextState,
@@ -17,10 +18,13 @@ const swapTokens = async (
     instruction: TransactionInstruction
     computeBudgetInstructions: Instruction[]
     addressLookupTableAddresses: PublicKey[]
+    tokenAddress: PublicKey
+    accountAddress: PublicKey
   }[],
-	onSuccess: () => void,
-	onFail: () => void,
+  onSuccess: () => void,
+  onFail: () => void,
 ) => {
+  console.log('☠️ ~ dataTransactions:', dataTransactions)
   if (!wallet?.signTransaction) {
     return
   }
@@ -41,11 +45,19 @@ const swapTokens = async (
 
     dataInstruction.push(dataTransaction.instruction)
 
+    const closeAccountIx = createCloseAccountInstruction(
+      dataTransaction.accountAddress,
+      wallet.publicKey!,
+      wallet.publicKey!,
+      [],
+      TOKEN_PROGRAM_ID,
+    )
+    dataInstruction.push(closeAccountIx)
+
     for (const computeBudgetInstruction of dataTransaction.computeBudgetInstructions) {
       dataInstruction.push(deserializeInstruction(computeBudgetInstruction))
     }
 
-    console.log('☠️ ~ dataInstruction:', dataInstruction)
     const messageV0 = new TransactionMessage({
       payerKey: wallet.publicKey!,
       recentBlockhash: blockhash,
@@ -65,11 +77,11 @@ const swapTokens = async (
           const result = await sendAndConfirmRawTransaction(connection, Buffer.from(transaction.serialize()), {})
           console.log('☠️ ~ signedTransactions.map ~ result:', result)
           console.log('Transaction Success!')
-					onSuccess()
+          onSuccess()
         } catch (err) {
           console.log('Transaction failed!')
           console.log(err)
-					onFail()
+          onFail()
         }
       }),
     )

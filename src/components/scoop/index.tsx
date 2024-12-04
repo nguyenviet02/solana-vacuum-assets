@@ -65,6 +65,7 @@ const Scoop = () => {
     ]
     const accounts = await solanaConnection.getParsedProgramAccounts(TOKEN_PROGRAM_ID, { filters: filters })
     for (const account of accounts) {
+      console.log('☠️ ~ getTokenAccounts ~ account:', account?.pubkey?.toString())
       //Parse the account data
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const parsedAccountInfo: any = account.account.data
@@ -77,6 +78,7 @@ const Scoop = () => {
         tokenBalance,
         tokenSymbol: tokenMetadata?.symbol,
         decimals: tokenMetadata?.mint?.decimals || 6,
+        accountAddress: account?.pubkey,
       }
       listToken.push(tokenData)
     }
@@ -132,6 +134,7 @@ const Scoop = () => {
 
   useEffect(() => {
     const getQuoteRequest = async () => {
+			setIsLoadingTokenData(true)
       const data = []
       for (const quoteRequest of quoteRequests) {
         const quote: QuoteResponse | null = await jupiterApi.quoteGet(quoteRequest)
@@ -141,9 +144,10 @@ const Scoop = () => {
         data.push(quote)
       }
       setListDataQuote(data)
+			setIsLoadingTokenData(false)
     }
     getQuoteRequest()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quoteRequests])
 
   return (

@@ -1,10 +1,11 @@
-import { Nft, Sft, SftWithToken, NftWithToken } from '@metaplex-foundation/js'
+import { Nft, Sft, SftWithToken, NftWithToken, PublicKey } from '@metaplex-foundation/js'
 
 export type TTokenData = {
   mintAddress: string
   tokenBalance: number
   tokenSymbol: string | undefined
-	decimals: number
+  decimals: number
+  accountAddress: PublicKey
 }
 
 export type TTokenMetadata = Sft | SftWithToken | Nft | NftWithToken | null

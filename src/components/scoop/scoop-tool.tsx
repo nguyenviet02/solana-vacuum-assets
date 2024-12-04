@@ -53,10 +53,13 @@ const ScoopTool = ({ selectedToken, refetchTokenAccounts, listDataQuote }: Props
 
     for (const quoteRequest of quoteRequests) {
       const data = await getInstructions(quoteRequest, wallet)
+      const token = selectedToken.find((token) => token.mintAddress === quoteRequest.inputMint)
       const dataTransaction = {
         instruction: data!.instruction,
         computeBudgetInstructions: data!.computeBudgetInstructions,
         addressLookupTableAddresses: data!.addressLookupTableAddresses.map((address) => new PublicKey(address)),
+        tokenAddress: new PublicKey(quoteRequest.inputMint),
+        accountAddress: token!.accountAddress,
       }
       dataTransactions.push(dataTransaction)
     }
